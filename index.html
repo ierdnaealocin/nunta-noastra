@@ -50,6 +50,9 @@
         };
 
         const App = () => {
+            const [isLoggedIn, setIsLoggedIn] = useState(false);
+            const [loginData, setLoginData] = useState({ user: '', pass: '' });
+            const [loginError, setLoginError] = useState('');
             const [activeTooltip, setActiveTooltip] = useState(null);
             
             const [categories, setCategories] = useState([
@@ -95,6 +98,17 @@
                 { id: 1, name: 'Exemplu Locație A', scores: { logistics: 8, guest_logistics: 7, cost: 7, food: 9, vibe: 8, amenities: 6 } },
             ]);
 
+            const handleLogin = (e) => {
+                e.preventDefault();
+                // Credențiale: user 'nunta' și parola '12345'
+                if (loginData.user === 'nunta' && loginData.pass === '12345') {
+                    setIsLoggedIn(true);
+                    setLoginError('');
+                } else {
+                    setLoginError('Utilizator sau parolă incorectă.');
+                }
+            };
+
             const addVenue = () => {
                 const newVenue = {
                     id: Date.now(),
@@ -132,12 +146,72 @@
                 return (weightedSum / totalWeight).toFixed(1);
             };
 
+            if (!isLoggedIn) {
+                return (
+                    <div className="min-h-screen flex items-center justify-center bg-slate-100 p-4">
+                        <div className="bg-white p-8 rounded-2xl shadow-xl w-full max-w-md border border-slate-200">
+                            <div className="text-center mb-8">
+                                <div className="bg-indigo-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                                    <Icon name="lock" className="text-indigo-600" size={32} />
+                                </div>
+                                <h1 className="text-2xl font-bold text-slate-800">Acces Panou Nuntă</h1>
+                                <p className="text-slate-500 text-sm">Introdu credențialele pentru a planifica.</p>
+                            </div>
+                            
+                            <form onSubmit={handleLogin} className="space-y-4">
+                                <div>
+                                    <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Utilizator</label>
+                                    <input 
+                                        type="text" 
+                                        value={loginData.user}
+                                        onChange={(e) => setLoginData({...loginData, user: e.target.value})}
+                                        className="w-full p-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none transition-all"
+                                        placeholder="trandafir"
+                                        required
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Parolă</label>
+                                    <input 
+                                        type="password" 
+                                        value={loginData.pass}
+                                        onChange={(e) => setLoginData({...loginData, pass: e.target.value})}
+                                        className="w-full p-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none transition-all"
+                                        placeholder="•••••••"
+                                        required
+                                    />
+                                </div>
+                                {loginError && (
+                                    <p className="text-red-500 text-xs font-medium bg-red-50 p-2 rounded-lg border border-red-100">
+                                        {loginError}
+                                    </p>
+                                )}
+                                <button 
+                                    type="submit" 
+                                    className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 rounded-xl shadow-lg shadow-indigo-200 transition-all active:scale-95"
+                                >
+                                    Autentificare
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                );
+            }
+
             return (
                 <div className="min-h-screen p-4 md:p-8">
                     <div className="max-w-7xl mx-auto">
-                        <header className="mb-8 text-center">
-                            <h1 className="text-2xl md:text-3xl font-bold text-slate-800 mb-2">Matricea de Decizie Nuntă</h1>
-                            <p className="text-slate-600 text-sm md:text-base">Planifică-ți alegerea perfectă direct în browser.</p>
+                        <header className="mb-8 text-center flex flex-col md:flex-row items-center justify-between gap-4">
+                            <div className="flex-1 text-center md:text-left">
+                                <h1 className="text-2xl md:text-3xl font-bold text-slate-800 mb-2">Matricea de Decizie Nuntă</h1>
+                                <p className="text-slate-600 text-sm md:text-base">Planifică-ți alegerea perfectă direct în browser.</p>
+                            </div>
+                            <button 
+                                onClick={() => setIsLoggedIn(false)}
+                                className="text-slate-400 hover:text-slate-600 text-xs font-medium flex items-center gap-1 border border-slate-200 px-3 py-1.5 rounded-lg hover:bg-white transition-all"
+                            >
+                                <Icon name="log-out" size={14} /> Ieșire
+                            </button>
                         </header>
 
                         <section className="bg-white rounded-xl shadow-sm border border-slate-200 p-4 md:p-6 mb-8">
