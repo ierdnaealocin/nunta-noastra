@@ -15,6 +15,8 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
         body { font-family: 'Inter', sans-serif; }
+        /* Asigurăm că tooltiptul nu este tăiat de overflow-ul containerului */
+        .tooltip-container { min-height: 450px; }
     </style>
 </head>
 <body class="bg-slate-50">
@@ -23,7 +25,6 @@
     <script type="text/babel">
         const { useState, useMemo, useEffect } = React;
         
-        // Mocking Lucide icons for standalone HTML
         const Icon = ({ name, size = 20, className = "" }) => {
             useEffect(() => {
                 if (window.lucide) {
@@ -35,12 +36,42 @@
 
         const App = () => {
             const [categories, setCategories] = useState([
-                { id: 'logistics', name: 'Logistică și Capacitate', weight: 20, description: 'Dimensiune, disponibilitate, accesibilitate.' },
-                { id: 'guest_logistics', name: 'Logistică Oaspeți', weight: 20, description: 'Cazare, transport, proximitate.' },
-                { id: 'cost', name: 'Cost și Valoare', weight: 30, description: 'Taxe, incluziuni, costuri ascunse.' },
-                { id: 'food', name: 'Mâncare și Băuturi', weight: 15, description: 'Catering, pachete băuturi.' },
-                { id: 'vibe', name: 'Atmosferă și Estetică', weight: 5, description: 'Stil, foto, plan de rezervă.' },
-                { id: 'amenities', name: 'Facilități și Reguli', weight: 10, description: 'Suite, parcare, reguli.' },
+                { 
+                    id: 'logistics', 
+                    name: 'Logistică și Capacitate', 
+                    weight: 20, 
+                    description: '• Vizibilitate Spațiu (obstacole)\n• Adecvare Ring Dans\n• Marjă Flexibilitate (min/max persoane)\n• Disponibilitate Dată' 
+                },
+                { 
+                    id: 'guest_logistics', 
+                    name: 'Logistică Oaspeți', 
+                    weight: 20, 
+                    description: '• Accesibilitate Drum\n• Proximitate Cazare\n• Servicii Transport (Uber/Taxi)\n• Facilități Dizabilități' 
+                },
+                { 
+                    id: 'cost', 
+                    name: 'Cost și Valoare', 
+                    weight: 30, 
+                    description: '• Taxe Adiacente (dop, curent etc.)\n• Condiții Contractuale (clauze)\n• Inventar Inclus (mese, veselă)\n• Predictibilitate Cost' 
+                },
+                { 
+                    id: 'food', 
+                    name: 'Mâncare și Băuturi', 
+                    weight: 15, 
+                    description: '• Adaptabilitate Meniu (vegan/alergii)\n• Calitate Open Bar\n• Standard Servire (ospătari/invitat)\n• Degustare Prealabilă' 
+                },
+                { 
+                    id: 'vibe', 
+                    name: 'Atmosferă și Estetică', 
+                    weight: 5, 
+                    description: '• Unitate Stilistică\n• Calitate Plan B (ploaie)\n• Iluminat Ambiental\n• Grad Intimitate (exclusivitate)' 
+                },
+                { 
+                    id: 'amenities', 
+                    name: 'Facilități și Reguli', 
+                    weight: 10, 
+                    description: '• Eficiență Climatizare (AC/Căldură)\n• Capacitate Parcare (pază)\n• Restricții Zgomot (limită orară)\n• Cameră Securizată (miri)' 
+                },
             ]);
 
             const [venues, setVenues] = useState([
@@ -116,12 +147,22 @@
                                     <Icon name="plus" size={16} /> Adaugă Locație
                                 </button>
                             </div>
-                            <div className="overflow-x-auto">
+                            {/* Am adăugat tooltip-container și min-height aici */}
+                            <div className="overflow-x-auto tooltip-container pb-20">
                                 <table className="w-full text-left border-collapse">
                                     <thead>
                                         <tr className="bg-slate-50 text-xs uppercase text-slate-500">
                                             <th className="p-4 border-b">Locație</th>
-                                            {categories.map(cat => <th key={cat.id} className="p-4 border-b text-center">{cat.name}</th>)}
+                                            {categories.map(cat => (
+                                                <th key={cat.id} className="p-4 border-b text-center relative group cursor-help">
+                                                    <span>{cat.name}</span>
+                                                    {/* Tooltip pe hover - ajustat z-index și poziție */}
+                                                    <div className="hidden group-hover:block absolute z-50 w-64 p-3 bg-slate-800 text-white text-[11px] font-normal normal-case rounded-lg shadow-2xl top-full left-1/2 -translate-x-1/2 whitespace-pre-line text-left leading-relaxed mt-1">
+                                                        <div className="font-bold mb-1 border-b border-slate-600 pb-1 text-indigo-300">{cat.name}</div>
+                                                        {cat.description}
+                                                    </div>
+                                                </th>
+                                            ))}
                                             <th className="p-4 border-b text-center bg-indigo-50/30">Scor</th>
                                             <th className="p-4 border-b"></th>
                                         </tr>
